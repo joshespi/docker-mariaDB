@@ -1,22 +1,32 @@
 version: "3.8"
 services:
-  mariadb:
+  homeDB:
     image: mariadb:11.3
     restart: always
+    env_file: .env
     ports:
-      - 3310:3306
+      - "3315:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     volumes:
       - ./mariadb_data:/var/lib/mysql
+    networks:
+      - backend
 
   phpmyadmin:
     image: phpmyadmin:latest
     restart: always
     ports:
-      - 8080:80
+      - "8085:80"
+    environment:
+      - PMA_HOST=homeDB
     depends_on:
-      - mariadb
+      - homeDB
+    networks:
+      - backend
 
 volumes:
   mariadb_data:
+
+networks:
+  backend:
